@@ -14,6 +14,7 @@
 		EE4FCB0D1B4A7DF10027EF71 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */; };
 		EE4FCB101B4A7DF10027EF71 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB0E1B4A7DF10027EF71 /* LaunchScreen.xib */; };
 		EE4FCB1C1B4A7DF10027EF71 /* FellowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB1B1B4A7DF10027EF71 /* FellowTests.swift */; };
+		EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		EE4FCB151B4A7DF10027EF71 /* FellowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FellowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4FCB1A1B4A7DF10027EF71 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE4FCB1B1B4A7DF10027EF71 /* FellowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FellowTests.swift; sourceTree = "<group>"; };
+		EE4FCB271B4A824E0027EF71 /* Fellow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Fellow-Bridging-Header.h"; sourceTree = "<group>"; };
+		EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Bridging-Header.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,11 +84,13 @@
 		EE4FCAF71B4A7DF10027EF71 = {
 			isa = PBXGroup;
 			children = (
+				EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */,
 				EE4FCB021B4A7DF10027EF71 /* Fellow */,
 				EE4FCB181B4A7DF10027EF71 /* FellowTests */,
 				EE4FCB011B4A7DF10027EF71 /* Products */,
 				9E89611A9DC4A9B9F20E1AE3 /* Pods */,
 				93D377D370DF8901BC3C8EAF /* Frameworks */,
+				EE4FCB271B4A824E0027EF71 /* Fellow-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -274,6 +279,7 @@
 			files = (
 				EE4FCB081B4A7DF10027EF71 /* ViewController.swift in Sources */,
 				EE4FCB061B4A7DF10027EF71 /* AppDelegate.swift in Sources */,
+				EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -403,10 +409,13 @@
 			baseConfigurationReference = 13882A3289233C625F3FBC90 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Fellow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Fellow-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -415,10 +424,12 @@
 			baseConfigurationReference = 337FBF76765BCA2D8DEC75A2 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Fellow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Fellow-Bridging-Header.h";
 			};
 			name = Release;
 		};

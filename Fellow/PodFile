@@ -5,9 +5,8 @@ platform :ios, '8.4'
 
 
 pod 'LayerKit'
-
-pod 'Facebook-iOS-SDK'
-
-pod 'Parse-iOS-SDK'
-
+pod 'FBSDKCoreKit',  '4.1.0'
+pod 'FBSDKLoginKit', '4.1.0'
+pod 'FBSDKShareKit', '4.1.0'
+pod 'Parse'
 pod 'GoogleMaps'
