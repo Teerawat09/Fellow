@@ -9,12 +9,13 @@
 /* Begin PBXBuildFile section */
 		55F85E5E9193330D67E50DE1 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AA86AA241B4D5DEBDD2274A /* libPods.a */; };
 		EE4FCB061B4A7DF10027EF71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */; };
-		EE4FCB081B4A7DF10027EF71 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB071B4A7DF10027EF71 /* ViewController.swift */; };
 		EE4FCB0B1B4A7DF10027EF71 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB091B4A7DF10027EF71 /* Main.storyboard */; };
 		EE4FCB0D1B4A7DF10027EF71 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */; };
 		EE4FCB101B4A7DF10027EF71 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB0E1B4A7DF10027EF71 /* LaunchScreen.xib */; };
 		EE4FCB1C1B4A7DF10027EF71 /* FellowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB1B1B4A7DF10027EF71 /* FellowTests.swift */; };
 		EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */; };
+		EEEA8AE31B4F6B6A007C4DCC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */; };
+		EEEA8AE51B4FBDF5007C4DCC /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEEA8AE41B4FBDF5007C4DCC /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,7 +35,6 @@
 		EE4FCB001B4A7DF10027EF71 /* Fellow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fellow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4FCB041B4A7DF10027EF71 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		EE4FCB071B4A7DF10027EF71 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		EE4FCB0A1B4A7DF10027EF71 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		EE4FCB0F1B4A7DF10027EF71 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -43,6 +43,8 @@
 		EE4FCB1B1B4A7DF10027EF71 /* FellowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FellowTests.swift; sourceTree = "<group>"; };
 		EE4FCB271B4A824E0027EF71 /* Fellow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Fellow-Bridging-Header.h"; sourceTree = "<group>"; };
 		EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Bridging-Header.m"; sourceTree = "<group>"; };
+		EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		EEEA8AE41B4FBDF5007C4DCC /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EEEA8AE51B4FBDF5007C4DCC /* CoreLocation.framework in Frameworks */,
 				55F85E5E9193330D67E50DE1 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -67,6 +70,7 @@
 		93D377D370DF8901BC3C8EAF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EEEA8AE41B4FBDF5007C4DCC /* CoreLocation.framework */,
 				0AA86AA241B4D5DEBDD2274A /* libPods.a */,
 			);
 			name = Frameworks;
@@ -107,7 +111,7 @@
 			isa = PBXGroup;
 			children = (
 				EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */,
-				EE4FCB071B4A7DF10027EF71 /* ViewController.swift */,
+				EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */,
 				EE4FCB091B4A7DF10027EF71 /* Main.storyboard */,
 				EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */,
 				EE4FCB0E1B4A7DF10027EF71 /* LaunchScreen.xib */,
@@ -277,7 +281,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE4FCB081B4A7DF10027EF71 /* ViewController.swift in Sources */,
+				EEEA8AE31B4F6B6A007C4DCC /* ViewController.swift in Sources */,
 				EE4FCB061B4A7DF10027EF71 /* AppDelegate.swift in Sources */,
 				EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */,
 			);
