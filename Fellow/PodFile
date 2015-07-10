@@ -2,11 +2,13 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '8.4'
 
-
-
 pod 'LayerKit'
+pod 'Atlas'
+pod 'Parse'
+pod 'ParseUI'
+pod 'ParseFacebookUtilsV4'
 pod 'FBSDKCoreKit',  '4.1.0'
 pod 'FBSDKLoginKit', '4.1.0'
 pod 'FBSDKShareKit', '4.1.0'
-pod 'Parse'
 pod 'GoogleMaps'
+pod 'SVProgressHUD'
