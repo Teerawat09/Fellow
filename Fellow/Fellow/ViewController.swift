@@ -27,11 +27,12 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         
         
         logInController.delegate = self
+        
     }
     
     func locationManager(manager: CLLocationManager!,   didUpdateLocations locations: [AnyObject]!) {
-        var locValue:CLLocationCoordinate2D = manager.location.coordinate
-        println("locations = \(locValue.latitude) \(locValue.longitude)")
+//        var locValue:CLLocationCoordinate2D = manager.location.coordinate
+//        println("locations = \(locValue.latitude) \(locValue.longitude)")
         
     }
     
@@ -230,24 +231,34 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
             dispatch_async(dispatch_get_main_queue(),{
                 if findObjects.count <= 0 {
                     var newObj = PFObject(className: "UserLocation")
-                    newObj["UserID"] = PFUser.currentUser()!.objectId!
-                    newObj["GeoPoint"] = PFGeoPoint(latitude: self.locationManager.location.coordinate.latitude,longitude: self.locationManager.location.coordinate.longitude)
-                    newObj.saveInBackground()
+                    self.saveUserLocation(newObj)
                 }else{
                     query.getObjectInBackgroundWithId(findObjects[0].objectId!) {
                         (PFobj: PFObject?, error: NSError?) -> Void in
                         if error != nil {
                             println(error)
-                        } else if let PFobj = PFobj {
-                            PFobj["UserID"] = PFUser.currentUser()!.objectId!
-                            PFobj["GeoPoint"] = PFGeoPoint(latitude: self.locationManager.location.coordinate.latitude,longitude: self.locationManager.location.coordinate.longitude)
-                            PFobj.saveInBackground()
+                        } else {
+                            self.saveUserLocation(PFobj)
                         }
                     }
                 }
                 
             })
             
+        }
+    }
+    
+    func saveUserLocation(PFobj: PFObject?) {
+        let getLatitude : CLLocationDegrees? = self.locationManager.location.coordinate.latitude
+        let getLongitude : CLLocationDegrees? = self.locationManager.location.coordinate.longitude
+        if let PFobj = PFobj {
+            if let lat = getLatitude , let lon = getLongitude {
+                if PFUser.currentUser()?.sessionToken != nil{
+                    PFobj["UserID"] = PFUser.currentUser()!.objectId!
+                    PFobj["GeoPoint"] = PFGeoPoint(latitude: lat,longitude: lon)
+                    PFobj.saveInBackground()
+                }
+            }
         }
     }
     
@@ -284,7 +295,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     }
 
     @IBAction func didTapFacebookConnect(sender: AnyObject) {
-        
+
         PFUser.logOutInBackgroundWithBlock { ( error:NSError?) -> Void in
             
             if error == nil {
