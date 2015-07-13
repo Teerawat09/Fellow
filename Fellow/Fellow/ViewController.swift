@@ -96,7 +96,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
                                     
                                 }
                                 self.updateUserLocation()
-                                self.saveFBLikeList()
+                                //self.saveFBLikeList()
                                 
                             }
                         }
@@ -108,6 +108,55 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
             //User not has currentAccessToken
         }
         
+    }
+    
+    func updateUserChanels(){
+        if((FBSDKAccessToken.currentAccessToken()) != nil){
+            
+            FBSDKGraphRequest(graphPath: "me/likes?pretty=0&limit=999", parameters: nil).startWithCompletionHandler({ (connection, result, error) -> Void in
+                if (error == nil){
+                    self.dict = result as! NSDictionary
+                    var dataList: NSArray? = self.dict.valueForKey("data") as? NSArray
+                    
+                    var likeListName:[NSString] = []
+                    
+                    for item in dataList!{
+                        likeListName.append( (item["name"] as! NSString).lowercaseString )
+                    }
+                    
+                    likeListName = self.uniq(likeListName)
+                    
+                    for dataItem in likeListName {
+                        var likeObject = PFObject(className: "Like")
+                        likeObject["name"] = dataItem
+                        
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)){
+                            
+                            var query  = PFQuery(className: "Like")
+                            query.whereKey("name", equalTo: dataItem )
+                            var findObject: AnyObject? = query.findObjects()
+                            
+                            dispatch_async(dispatch_get_main_queue()) {
+                                //Has findOject been recorded in ClassUserInfo?
+                                if let findObj: AnyObject = findObject{
+                                    if findObj.count <= 0 {
+                                        likeObject.save()
+                                    }else{
+                                        //User has been recorded in class UserInfo
+                                        //                                        println("findObject = \(findObject!.count) meaning UserInfo has been recorded")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if PFUser.currentUser() != nil {
+                        self.saveUserLikeList(PFUser.currentUser()!)
+                    }
+                }
+            })
+        }else{
+            //User not has currentAccessToken
+        }
     }
     
     //inner func saveFBLikeList
@@ -253,7 +302,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         let getLongitude : CLLocationDegrees? = self.locationManager.location.coordinate.longitude
         if let PFobj = PFobj {
             if let lat = getLatitude , let lon = getLongitude {
-                if PFUser.currentUser()?.sessionToken != nil{
+                if PFUser.currentUser() != nil {
                     PFobj["UserID"] = PFUser.currentUser()!.objectId!
                     PFobj["GeoPoint"] = PFGeoPoint(latitude: lat,longitude: lon)
                     PFobj.saveInBackground()

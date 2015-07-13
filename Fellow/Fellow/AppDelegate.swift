@@ -22,6 +22,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         Parse.setApplicationId("QvrS99pSLUBnS3UiYlPDCL2BeP0riwYz1OncSCp7", clientKey:"BsWsJoRXsIFPRXi5E2UQ2aa1BaXDKFZJjfRFhjm8")
         PFFacebookUtils.initializeFacebookWithApplicationLaunchOptions(launchOptions)
         
+        let userNotificationTypes = (UIUserNotificationType.Alert |  UIUserNotificationType.Badge |  UIUserNotificationType.Sound);
+        
+        let settings = UIUserNotificationSettings(forTypes: userNotificationTypes, categories: nil)
+        application.registerUserNotificationSettings(settings)
+        application.registerForRemoteNotifications()
+        
         return true
     }
     
@@ -34,6 +40,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
                 openURL: url,
                 sourceApplication: sourceApplication,
                 annotation: annotation)
+    }
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        // Store the deviceToken in the current Installation and save it to Parse
+        let installation = PFInstallation.currentInstallation()
+        installation.setDeviceTokenFromData(deviceToken)
+        installation.saveInBackground()
     }
 
     func applicationWillResignActive(application: UIApplication) {
