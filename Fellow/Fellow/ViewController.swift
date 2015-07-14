@@ -8,12 +8,18 @@
 
 import UIKit
 
-class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocationManagerDelegate{
+class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
+    
+   @IBOutlet weak var tableView: UITableView!
     
     var permissions = [ "public_profile", "email", "user_friends","user_likes"]
     var dict : NSDictionary!
     var logInController = PFLogInViewController()
     var locationManager:CLLocationManager!
+    var checkItemList : [String] = ["G","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12"]
+    var channelList : [String] = []
+    
+    
 
     
     override func viewDidLoad() {
@@ -24,15 +30,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startMonitoringSignificantLocationChanges()
-        
-        
         logInController.delegate = self
-        
-    }
-    
-    func locationManager(manager: CLLocationManager!,   didUpdateLocations locations: [AnyObject]!) {
-//        var locValue:CLLocationCoordinate2D = manager.location.coordinate
-//        println("locations = \(locValue.latitude) \(locValue.longitude)")
         
     }
     
@@ -44,10 +42,58 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
             updateUserLocation()
             saveUserInfo(currentUser!)
             
+            if let channels = PFInstallation.currentInstallation().channels {
+                channelList = channels as! [String]
+                tableView.reloadData()
+            }
+            
         } else {
             // Show the signup or login screen
             showPFLoginViewController()
         }
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return checkItemList.count
+    }
+    
+    // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
+    // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
+        
+        if let findItemIndex = find(channelList,checkItemList[indexPath.row]) {
+            cell.accessoryType = .Checkmark
+        }else{
+            cell.accessoryType = .None
+        }
+        
+        cell.textLabel?.text = self.checkItemList[indexPath.row]
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if let cell = tableView.cellForRowAtIndexPath(indexPath) {
+            if cell.accessoryType == .Checkmark {
+                cell.accessoryType = .None
+                let findItemIndex = find(channelList,checkItemList[indexPath.row])
+                channelList.removeAtIndex(findItemIndex!)
+                
+            } else {
+                cell.accessoryType = .Checkmark
+                channelList.append(checkItemList[indexPath.row]);
+            }
+            self.updateUserChannels()
+            tableView.reloadData()
+        }
+    }
+    
+    func locationManager(manager: CLLocationManager!,   didUpdateLocations locations: [AnyObject]!) {
+//        var locValue:CLLocationCoordinate2D = manager.location.coordinate
+//        println("locations = \(locValue.latitude) \(locValue.longitude)")
+        
     }
     
     func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
@@ -96,6 +142,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
                                     
                                 }
                                 self.updateUserLocation()
+//                                self.updateUserChannels()
                                 //self.saveFBLikeList()
                                 
                             }
@@ -110,53 +157,11 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         
     }
     
-    func updateUserChanels(){
-        if((FBSDKAccessToken.currentAccessToken()) != nil){
-            
-            FBSDKGraphRequest(graphPath: "me/likes?pretty=0&limit=999", parameters: nil).startWithCompletionHandler({ (connection, result, error) -> Void in
-                if (error == nil){
-                    self.dict = result as! NSDictionary
-                    var dataList: NSArray? = self.dict.valueForKey("data") as? NSArray
-                    
-                    var likeListName:[NSString] = []
-                    
-                    for item in dataList!{
-                        likeListName.append( (item["name"] as! NSString).lowercaseString )
-                    }
-                    
-                    likeListName = self.uniq(likeListName)
-                    
-                    for dataItem in likeListName {
-                        var likeObject = PFObject(className: "Like")
-                        likeObject["name"] = dataItem
-                        
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)){
-                            
-                            var query  = PFQuery(className: "Like")
-                            query.whereKey("name", equalTo: dataItem )
-                            var findObject: AnyObject? = query.findObjects()
-                            
-                            dispatch_async(dispatch_get_main_queue()) {
-                                //Has findOject been recorded in ClassUserInfo?
-                                if let findObj: AnyObject = findObject{
-                                    if findObj.count <= 0 {
-                                        likeObject.save()
-                                    }else{
-                                        //User has been recorded in class UserInfo
-                                        //                                        println("findObject = \(findObject!.count) meaning UserInfo has been recorded")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if PFUser.currentUser() != nil {
-                        self.saveUserLikeList(PFUser.currentUser()!)
-                    }
-                }
-            })
-        }else{
-            //User not has currentAccessToken
-        }
+    func updateUserChannels() {
+        let currentInstallation = PFInstallation.currentInstallation()
+        currentInstallation.removeObjectForKey("channels")
+        currentInstallation.addUniqueObjectsFromArray(channelList, forKey: "channels")
+        currentInstallation.saveInBackground()
     }
     
     //inner func saveFBLikeList
@@ -190,6 +195,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
                                 //Has findOject been recorded in ClassUserInfo?
                                 if let findObj: AnyObject = findObject{
                                     if findObj.count <= 0 {
+                                        
                                         likeObject.save()
 
                                     }else{
@@ -272,40 +278,38 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     
     func updateUserLocation() {
         var query = PFQuery(className:"UserLocation")
+        
         query.whereKey("UserID", equalTo: PFUser.currentUser()!.objectId!)
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)){
 
-            var findObjects = query.findObjects() as! [PFObject]
-            
-            dispatch_async(dispatch_get_main_queue(),{
-                if findObjects.count <= 0 {
-                    var newObj = PFObject(className: "UserLocation")
-                    self.saveUserLocation(newObj)
-                }else{
-                    query.getObjectInBackgroundWithId(findObjects[0].objectId!) {
-                        (PFobj: PFObject?, error: NSError?) -> Void in
-                        if error != nil {
-                            println(error)
-                        } else {
-                            self.saveUserLocation(PFobj)
+            if var findObjects = query.findObjects() as? [PFObject]{
+                dispatch_async(dispatch_get_main_queue(),{
+                    if findObjects.count <= 0 {
+                        self.saveUserLocation(PFObject(className: "UserLocation"))
+                    }else{
+                        query.getObjectInBackgroundWithId(findObjects[0].objectId!) {
+                            (PFobj: PFObject?, error: NSError?) -> Void in
+                            if error != nil {
+                                println(error)
+                            } else {
+                                self.saveUserLocation(PFobj)
+                            }
                         }
                     }
-                }
-                
-            })
-            
+                })
+            }
         }
     }
     
     func saveUserLocation(PFobj: PFObject?) {
         let getLatitude : CLLocationDegrees? = self.locationManager.location.coordinate.latitude
         let getLongitude : CLLocationDegrees? = self.locationManager.location.coordinate.longitude
-        if let PFobj = PFobj {
+        if let obj = PFobj {
             if let lat = getLatitude , let lon = getLongitude {
                 if PFUser.currentUser() != nil {
-                    PFobj["UserID"] = PFUser.currentUser()!.objectId!
-                    PFobj["GeoPoint"] = PFGeoPoint(latitude: lat,longitude: lon)
-                    PFobj.saveInBackground()
+                    obj["UserID"] = PFUser.currentUser()!.objectId!
+                    obj["GeoPoint"] = PFGeoPoint(latitude: lat,longitude: lon)
+                    obj.saveInBackground()
                 }
             }
         }
