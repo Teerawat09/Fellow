@@ -14,7 +14,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate{
 
     var window: UIWindow?
-
+    var getUserInfo: [NSObject : AnyObject] = [:]
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
@@ -27,6 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         let settings = UIUserNotificationSettings(forTypes: userNotificationTypes, categories: nil)
         application.registerUserNotificationSettings(settings)
         application.registerForRemoteNotifications()
+        
+        // Extract the notification data
+        if let notificationPayload = launchOptions?[UIApplicationLaunchOptionsRemoteNotificationKey] as? NSDictionary {
+            NotificationOpenLayerView()
+        }
         
         return true
     }
@@ -48,6 +53,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         installation.setDeviceTokenFromData(deviceToken)
         installation.saveInBackground()
     }
+    
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
+        var token : dispatch_once_t = 0
+        self.getUserInfo = userInfo
+        completionHandler(UIBackgroundFetchResult.NewData)
+        
+        
+    }
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -61,16 +74,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
 
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        // Extract the notification data
+        
     }
 
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         FBSDKAppEvents.activateApp()
-    
+        if self.getUserInfo.count != 0{
+            NotificationOpenLayerView()
+        }
+        
     }
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func NotificationOpenLayerView(){
+        var token : dispatch_once_t = 0
+        dispatch_once(&token) { () -> Void in
+            let rootViewController = self.window?.rootViewController as! UINavigationController
+            
+            let mainStoryboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            var VC = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController") as! ViewController
+            
+            let navController = UINavigationController(rootViewController: VC) as UINavigationController
+            var NotiVC = mainStoryboard.instantiateViewControllerWithIdentifier("LayerVC") as! LayerVC
+            
+            rootViewController.pushViewController(NotiVC, animated: true)
+            
+            self.getUserInfo = [:]
+        }
     }
 
 

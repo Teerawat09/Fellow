@@ -7,7 +7,7 @@
         <!--Favorite-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Fellow" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="ViewController" customModule="Fellow" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -35,6 +35,11 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <navigationItem key="navigationItem" title="Favorite" id="FVI-nK-eF3">
+                        <barButtonItem key="leftBarButtonItem" title="LayerVC" id="dKf-R8-kKx">
+                            <connections>
+                                <segue destination="Z3e-M7-U4o" kind="push" id="d69-LT-dYz"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Logout" id="yQZ-gC-lon">
                             <connections>
                                 <action selector="didTapFacebookConnect:" destination="BYZ-38-t0r" id="Y9N-w8-iOP"/>
@@ -48,6 +53,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="490" y="290"/>
+        </scene>
+        <!--LayerVC-->
+        <scene sceneID="Xzj-tr-9el">
+            <objects>
+                <viewController storyboardIdentifier="LayerVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Z3e-M7-U4o" customClass="LayerVC" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="UDM-I8-i71">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="28i-Qg-ffY"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ghh-19-Ihf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="889" y="290"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ge1-SM-iAq">

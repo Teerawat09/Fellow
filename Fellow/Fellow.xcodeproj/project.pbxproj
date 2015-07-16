@@ -14,6 +14,7 @@
 		EE4FCB101B4A7DF10027EF71 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB0E1B4A7DF10027EF71 /* LaunchScreen.xib */; };
 		EE4FCB1C1B4A7DF10027EF71 /* FellowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB1B1B4A7DF10027EF71 /* FellowTests.swift */; };
 		EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */; };
+		EE7188AE1B54CB9E0069FC8F /* LayerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7188AD1B54CB9E0069FC8F /* LayerVC.swift */; };
 		EEEA8AE31B4F6B6A007C4DCC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */; };
 		EEEA8AE51B4FBDF5007C4DCC /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEEA8AE41B4FBDF5007C4DCC /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
@@ -43,6 +44,7 @@
 		EE4FCB1B1B4A7DF10027EF71 /* FellowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FellowTests.swift; sourceTree = "<group>"; };
 		EE4FCB271B4A824E0027EF71 /* Fellow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Fellow-Bridging-Header.h"; sourceTree = "<group>"; };
 		EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Bridging-Header.m"; sourceTree = "<group>"; };
+		EE7188AD1B54CB9E0069FC8F /* LayerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LayerVC.swift; path = ../LayerVC.swift; sourceTree = "<group>"; };
 		EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		EEEA8AE41B4FBDF5007C4DCC /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -112,6 +114,7 @@
 			children = (
 				EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */,
 				EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */,
+				EE7188AD1B54CB9E0069FC8F /* LayerVC.swift */,
 				EE4FCB091B4A7DF10027EF71 /* Main.storyboard */,
 				EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */,
 				EE4FCB0E1B4A7DF10027EF71 /* LaunchScreen.xib */,
@@ -197,6 +200,11 @@
 					EE4FCAFF1B4A7DF10027EF71 = {
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = AG6MZ7U3B2;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					EE4FCB141B4A7DF10027EF71 = {
 						CreatedOnToolsVersion = 6.4;
@@ -284,6 +292,7 @@
 				EEEA8AE31B4F6B6A007C4DCC /* ViewController.swift in Sources */,
 				EE4FCB061B4A7DF10027EF71 /* AppDelegate.swift in Sources */,
 				EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */,
+				EE7188AE1B54CB9E0069FC8F /* LayerVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
