@@ -278,11 +278,12 @@ extern NSString *const LYRClientContentTransferProgressUserInfoKey;
 
 /**
  @abstract Creates and returns a new Layer client instance.
+ @param appID An app id url obtained from the Layer Developer Portal. https://developer.layer.com/projects
  @return Returns a newly created Layer client object.
  @warning Throws `NSInternalInconsistencyException` when creating another Layer Client instance with the same `appID` value under the same process (application).
  However multiple instances of Layer Client with the same `appID` are allowed if running the code under Unit Tests.
  */
-+ (instancetype)clientWithAppID:(NSUUID *)appID;
++ (instancetype)clientWithAppID:(NSURL *)appID;
 
 /**
  @abstract The object that acts as the delegate of the receiving client.
@@ -292,7 +293,7 @@ extern NSString *const LYRClientContentTransferProgressUserInfoKey;
 /**
  @abstract The app key.
  */
-@property (nonatomic, copy, readonly) NSUUID *appID;
+@property (nonatomic, copy, readonly) NSURL *appID;
 
 ///--------------------------------
 /// @name Managing Connection State

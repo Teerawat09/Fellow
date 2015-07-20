@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		55F85E5E9193330D67E50DE1 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AA86AA241B4D5DEBDD2274A /* libPods.a */; };
+		EE048E4E1B57722500439DD5 /* ConversationListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE048E4B1B57722500439DD5 /* ConversationListViewController.swift */; };
+		EE048E4F1B57722500439DD5 /* ConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE048E4C1B57722500439DD5 /* ConversationViewController.swift */; };
+		EE048E501B57722500439DD5 /* ParticipantTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE048E4D1B57722500439DD5 /* ParticipantTableViewController.swift */; };
+		EE048E521B57725000439DD5 /* PFUser+ATLParticipant.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE048E511B57725000439DD5 /* PFUser+ATLParticipant.swift */; };
+		EE048E551B57727C00439DD5 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE048E541B57727C00439DD5 /* UserManager.swift */; };
 		EE4FCB061B4A7DF10027EF71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */; };
 		EE4FCB0B1B4A7DF10027EF71 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB091B4A7DF10027EF71 /* Main.storyboard */; };
 		EE4FCB0D1B4A7DF10027EF71 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */; };
@@ -33,6 +38,11 @@
 		0AA86AA241B4D5DEBDD2274A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		13882A3289233C625F3FBC90 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		337FBF76765BCA2D8DEC75A2 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		EE048E4B1B57722500439DD5 /* ConversationListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationListViewController.swift; sourceTree = "<group>"; };
+		EE048E4C1B57722500439DD5 /* ConversationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationViewController.swift; sourceTree = "<group>"; };
+		EE048E4D1B57722500439DD5 /* ParticipantTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParticipantTableViewController.swift; sourceTree = "<group>"; };
+		EE048E511B57725000439DD5 /* PFUser+ATLParticipant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PFUser+ATLParticipant.swift"; sourceTree = "<group>"; };
+		EE048E541B57727C00439DD5 /* UserManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		EE4FCB001B4A7DF10027EF71 /* Fellow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fellow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4FCB041B4A7DF10027EF71 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -87,16 +97,32 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		EE048E531B57725A00439DD5 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				EE048E511B57725000439DD5 /* PFUser+ATLParticipant.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		EE048E561B57728100439DD5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				EE048E541B57727C00439DD5 /* UserManager.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		EE4FCAF71B4A7DF10027EF71 = {
 			isa = PBXGroup;
 			children = (
 				EE4FCB281B4A824F0027EF71 /* Bridging-Header.m */,
+				EE4FCB271B4A824E0027EF71 /* Fellow-Bridging-Header.h */,
 				EE4FCB021B4A7DF10027EF71 /* Fellow */,
 				EE4FCB181B4A7DF10027EF71 /* FellowTests */,
 				EE4FCB011B4A7DF10027EF71 /* Products */,
 				9E89611A9DC4A9B9F20E1AE3 /* Pods */,
 				93D377D370DF8901BC3C8EAF /* Frameworks */,
-				EE4FCB271B4A824E0027EF71 /* Fellow-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -113,9 +139,14 @@
 			isa = PBXGroup;
 			children = (
 				EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */,
+				EE048E4B1B57722500439DD5 /* ConversationListViewController.swift */,
+				EE048E4C1B57722500439DD5 /* ConversationViewController.swift */,
+				EE048E4D1B57722500439DD5 /* ParticipantTableViewController.swift */,
 				EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */,
 				EE7188AD1B54CB9E0069FC8F /* LayerVC.swift */,
 				EE4FCB091B4A7DF10027EF71 /* Main.storyboard */,
+				EE048E531B57725A00439DD5 /* Extensions */,
+				EE048E561B57728100439DD5 /* Model */,
 				EE4FCB0C1B4A7DF10027EF71 /* Images.xcassets */,
 				EE4FCB0E1B4A7DF10027EF71 /* LaunchScreen.xib */,
 				EE4FCB031B4A7DF10027EF71 /* Supporting Files */,
@@ -289,9 +320,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE048E551B57727C00439DD5 /* UserManager.swift in Sources */,
 				EEEA8AE31B4F6B6A007C4DCC /* ViewController.swift in Sources */,
 				EE4FCB061B4A7DF10027EF71 /* AppDelegate.swift in Sources */,
+				EE048E4F1B57722500439DD5 /* ConversationViewController.swift in Sources */,
+				EE048E4E1B57722500439DD5 /* ConversationListViewController.swift in Sources */,
+				EE048E501B57722500439DD5 /* ParticipantTableViewController.swift in Sources */,
 				EE4FCB291B4A824F0027EF71 /* Bridging-Header.m in Sources */,
+				EE048E521B57725000439DD5 /* PFUser+ATLParticipant.swift in Sources */,
 				EE7188AE1B54CB9E0069FC8F /* LayerVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

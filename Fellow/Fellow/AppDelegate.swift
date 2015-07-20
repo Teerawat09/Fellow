@@ -14,12 +14,21 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate{
 
     var window: UIWindow?
+    
+    var lastViewController: AnyObject?
+    
     var getUserInfo: [NSObject : AnyObject] = [:]
+    
+    let ParseAppIDString: String = "QvrS99pSLUBnS3UiYlPDCL2BeP0riwYz1OncSCp7"
+    let ParseClientKeyString: String = "BsWsJoRXsIFPRXi5E2UQ2aa1BaXDKFZJjfRFhjm8"
+    
+    var layerClient : LYRClient!
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        Parse.setApplicationId("QvrS99pSLUBnS3UiYlPDCL2BeP0riwYz1OncSCp7", clientKey:"BsWsJoRXsIFPRXi5E2UQ2aa1BaXDKFZJjfRFhjm8")
+        //setupParse
+        setupParse()
         PFFacebookUtils.initializeFacebookWithApplicationLaunchOptions(launchOptions)
         
         let userNotificationTypes = (UIUserNotificationType.Alert |  UIUserNotificationType.Badge |  UIUserNotificationType.Sound);
@@ -32,6 +41,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         if let notificationPayload = launchOptions?[UIApplicationLaunchOptionsRemoteNotificationKey] as? NSDictionary {
             NotificationOpenLayerView()
         }
+        
+        //Initializes a LYRClient object
+        var urlLayerAppID = NSURL(string: "layer:///apps/staging/b6217282-23a6-11e5-8729-77a47d007ada")
+        layerClient = LYRClient(appID: urlLayerAppID)
+        
+        // Tells LYRClient to establish a connection with the Layer service
+        layerClient.connectWithCompletion { (success, error) -> Void in
+            if (success){
+                println("Client is connected!")
+            }else{
+                println("Layer error \(error)")
+            }
+        }
+        // Show View Controller
+//        let rootViewController = self.window?.rootViewController
+//        
+//        let mainStoryboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+//        var VC = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController") as! ViewController
+//        VC.layerClient = self.layerClient
+//        self.window!.rootViewController = UINavigationController(rootViewController: VC)
+//        self.window!.makeKeyAndVisible()
+        
         
         return true
     }
@@ -55,11 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
     }
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject], fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-        var token : dispatch_once_t = 0
         self.getUserInfo = userInfo
         completionHandler(UIBackgroundFetchResult.NewData)
-        
-        
     }
 
     func applicationWillResignActive(application: UIApplication) {
@@ -81,6 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         FBSDKAppEvents.activateApp()
+        
         if self.getUserInfo.count != 0{
             NotificationOpenLayerView()
         }
@@ -91,18 +120,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
+    func setupParse() {
+        // Enable Parse local data store for user persistence
+        Parse.enableLocalDatastore()
+        Parse.setApplicationId(ParseAppIDString, clientKey: ParseClientKeyString)
+        
+        // Set default ACLs
+        let defaultACL: PFACL = PFACL()
+        defaultACL.setPublicReadAccess(true)
+        PFACL.setDefaultACL(defaultACL, withAccessForCurrentUser: true)
+    }
+    
     func NotificationOpenLayerView(){
         var token : dispatch_once_t = 0
         dispatch_once(&token) { () -> Void in
+            
+            let childViews = self.window?.rootViewController?.childViewControllers
+            
             let rootViewController = self.window?.rootViewController as! UINavigationController
             
             let mainStoryboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
             var VC = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController") as! ViewController
             
             let navController = UINavigationController(rootViewController: VC) as UINavigationController
-            var NotiVC = mainStoryboard.instantiateViewControllerWithIdentifier("LayerVC") as! LayerVC
             
-            rootViewController.pushViewController(NotiVC, animated: true)
+            var layerVC = mainStoryboard.instantiateViewControllerWithIdentifier("LayerVC") as! LayerVC
+            
+            if !(childViews!.last!.isKindOfClass(LayerVC)) {
+                rootViewController.pushViewController(layerVC, animated: true)
+            }
+            
             
             self.getUserInfo = [:]
         }

@@ -9,5 +9,8 @@
 #import <ParseUI/ParseUI.h>
 #import <Bolts/Bolts.h>
 #import <ParseFacebookUtilsV4/PFFacebookUtils.h>
+#import <Atlas/Atlas.h>
+#import <LayerKit/LayerKit.h>
+#import <SVProgressHUD/SVProgressHUD.h>
 
 

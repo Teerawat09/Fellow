@@ -69,20 +69,22 @@
 // LayerKit
 #define COCOAPODS_POD_AVAILABLE_LayerKit
 #define COCOAPODS_VERSION_MAJOR_LayerKit 0
-#define COCOAPODS_VERSION_MINOR_LayerKit 14
-#define COCOAPODS_VERSION_PATCH_LayerKit 3
+#define COCOAPODS_VERSION_MINOR_LayerKit 15
+#define COCOAPODS_VERSION_PATCH_LayerKit 0
 
 // Parse
 #define COCOAPODS_POD_AVAILABLE_Parse
-#define COCOAPODS_VERSION_MAJOR_Parse 1
-#define COCOAPODS_VERSION_MINOR_Parse 7
-#define COCOAPODS_VERSION_PATCH_Parse 5
+// This library does not follow semantic-versioning,
+// so we were not able to define version macros.
+// Please contact the author.
+// Version: 1.7.5.1.
 
 // ParseFacebookUtilsV4
 #define COCOAPODS_POD_AVAILABLE_ParseFacebookUtilsV4
-#define COCOAPODS_VERSION_MAJOR_ParseFacebookUtilsV4 1
-#define COCOAPODS_VERSION_MINOR_ParseFacebookUtilsV4 7
-#define COCOAPODS_VERSION_PATCH_ParseFacebookUtilsV4 5
+// This library does not follow semantic-versioning,
+// so we were not able to define version macros.
+// Please contact the author.
+// Version: 1.7.5.1.
 
 // ParseUI
 #define COCOAPODS_POD_AVAILABLE_ParseUI

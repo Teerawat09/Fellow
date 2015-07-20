@@ -20,6 +20,8 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     
     var channelList : [String] = []
     
+    var myAppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -32,12 +34,13 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     }
     
     override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(true)
-        var currentUser = PFUser.currentUser()
-        if currentUser != nil {
+        super.viewDidAppear(animated)
+
+        if PFUser.currentUser() != nil {
             //Insert UserInfo into Parse
             updateUserLocation()
-            saveUserInfo(currentUser!)
+            saveUserInfo(PFUser.currentUser()!)
+                        
             if let channels = PFInstallation.currentInstallation().channels {
                 channelList = channels as! [String]
                 tableView.reloadData()
@@ -86,13 +89,27 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     }
     
     func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismissViewControllerAnimated(true, completion: { () -> Void in
+            self.layerRequestAuthentication(self.myAppDelegate.layerClient)
+        })
+    }
+    
+    func logout(){
+        PFUser.logOutInBackgroundWithBlock { ( error:NSError?) -> Void in
+            if error == nil {
+                self.layerRequestDeAuthentication(self.myAppDelegate.layerClient)
+                self.showPFLoginViewController()
+            }else{
+                println(error)
+            }
+        }
     }
     
     func showPFLoginViewController(){
         // Show the signup or login screen
         logInController.fields = (PFLogInFields.Facebook)
         logInController.facebookPermissions = permissions
+        
         self.presentViewController(logInController, animated:true, completion:nil)
     }
     
@@ -103,36 +120,16 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
             FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
                 if (error == nil){
                     self.dict = result as! NSDictionary
-                    var userInfoObject = PFObject(className: "UserInfo")
-                    userInfoObject["UserLoginID"] = currentUser.objectId
-                    userInfoObject["FacebookID"] = self.dict.valueForKey("id")
-                    userInfoObject["first_name"] = self.dict.valueForKey("first_name")
-                    userInfoObject["last_name"] = self.dict.valueForKey("last_name")
-                    userInfoObject["email"] = self.dict.valueForKey("email")
-                    
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)){
+                    if let userInfoObject = PFUser.currentUser(){
+                        userInfoObject["first_name"] = self.dict.valueForKey("first_name") as! String
+                        userInfoObject["last_name"] = self.dict.valueForKey("last_name") as! String
+                        userInfoObject["email"] = self.dict.valueForKey("email") as! String
                         
-                        let FacebookID: AnyObject? = userInfoObject["FacebookID"]
-                        var query  = PFQuery(className: "UserInfo")
-                        query.whereKey("FacebookID", equalTo: FacebookID!)
-                        var findObject: AnyObject? = query.findObjects()
-                        
-                        dispatch_async(dispatch_get_main_queue()) {
-                            //Has findOject been recorded in ClassUserInfo?
-                            if let findObj: AnyObject = findObject{
-                                if findObj.count <= 0 {
-                                    // Associate the device with a user
-                                    userInfoObject.saveInBackground()
-                                }else{
-                                    //User has been recorded in class UserInfo
-//                                    println("findObject = \(findObject!.count) meaning UserInfo has been recorded")
-                                }
-                                let installation = PFInstallation.currentInstallation()
-                                installation["user"] = PFUser.currentUser()
-                                installation.saveInBackground()
-                                self.updateUserLocation()
-                            }
-                        }
+                        userInfoObject.saveInBackground()
+                        let installation = PFInstallation.currentInstallation()
+                        installation["user"] = PFUser.currentUser()
+                        installation.saveInBackground()
+                        self.updateUserLocation()
                     }
                 }
             })
@@ -144,6 +141,8 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     func updateUserChannels() {
         let currentInstallation = PFInstallation.currentInstallation()
         currentInstallation.removeObjectForKey("channels")
+        currentInstallation.saveInBackground()
+        
         currentInstallation.addUniqueObjectsFromArray(channelList, forKey: "channels")
         currentInstallation.saveInBackground()
     }
@@ -174,24 +173,46 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         return buffer
     }
     
-    func sendNotification(){
-        // Find users near a given location
-        let myCompanyLocation = PFGeoPoint(latitude: 13.904837646718576, longitude: 100.52979811952365)
-            
-        // Find users near a given location
-        let userQuery = PFUser.query()
-        userQuery!.whereKey("location", nearGeoPoint: myCompanyLocation, withinMiles: 1)
-        
-        // Find devices associated with these users
-        let pushQuery = PFInstallation.query()
-        pushQuery!.whereKey("user", matchesQuery: userQuery!)
-        
-        // Send push notification to query
-        let push = PFPush()
-        push.setQuery(pushQuery) // Set our Installation query
-        push.setMessage("You are near at my Company")
-        push.sendPushInBackground()
-            
+    // MARK: LayerClient function
+    
+    func layerRequestAuthentication(layerClient : LYRClient){
+        SVProgressHUD.show()
+        // Request an authentication nonce from Layer
+        layerClient.requestAuthenticationNonceWithCompletion { (nonce : String!, error : NSError!) -> Void in
+            // Upon reciept of nonce, post to your backend and acquire a Layer identityToken
+            if (nonce != nil) {
+                let user = PFUser.currentUser()
+                let userID = user!.objectId! as String
+
+                PFCloud.callFunctionInBackground("generateToken", withParameters: ["nonce": nonce, "userID": userID]) { (object:AnyObject?, error: NSError?) -> Void in
+                    if error == nil {
+                        let identityToken = object as! String
+                        layerClient.authenticateWithIdentityToken(identityToken) { authenticatedUserID, error in
+                            if (error == nil) {
+                                SVProgressHUD.dismiss()
+                                println("Parse User authenticated with Layer Identity Token")
+                                
+                            }else{
+                                SVProgressHUD.showErrorWithStatus("\(error)")
+                                println("Parse User failed to authenticate with token with error: \(error)")
+                            }
+                        }
+                    } else {
+                        println("Parse Cloud function failed to be called to generate token with error: \(error)")
+                    }
+                }
+            }
+        }
+    }
+    
+    func layerRequestDeAuthentication(layerClient : LYRClient){
+        layerClient.deauthenticateWithCompletion { (success, error) -> Void in
+            if(!success){
+                println("Failed to deauthenticate user: \(error)")
+            }else{
+                println("User was deauthenticated")
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -199,16 +220,8 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         // Dispose of any resources that can be recreated.
     }
 
-    @IBAction func didTapFacebookConnect(sender: AnyObject) {
-        self.sendNotification()
-//        PFUser.logOutInBackgroundWithBlock { ( error:NSError?) -> Void in
-//            
-//            if error == nil {
-//                self.showPFLoginViewController()
-//            }else{
-//                println(error)
-//            }
-//        }
+    @IBAction func didTapLogout(sender: AnyObject) {
+        logout()
     }
 }
 
