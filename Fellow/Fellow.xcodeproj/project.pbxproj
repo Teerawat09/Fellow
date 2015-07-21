@@ -139,10 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				EE4FCB051B4A7DF10027EF71 /* AppDelegate.swift */,
-				EE048E4B1B57722500439DD5 /* ConversationListViewController.swift */,
-				EE048E4C1B57722500439DD5 /* ConversationViewController.swift */,
-				EE048E4D1B57722500439DD5 /* ParticipantTableViewController.swift */,
-				EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */,
+				EEAB90711B5CDDC000FA3AA8 /* Controllers */,
 				EE7188AD1B54CB9E0069FC8F /* LayerVC.swift */,
 				EE4FCB091B4A7DF10027EF71 /* Main.storyboard */,
 				EE048E531B57725A00439DD5 /* Extensions */,
@@ -177,6 +174,17 @@
 				EE4FCB1A1B4A7DF10027EF71 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EEAB90711B5CDDC000FA3AA8 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EE048E4B1B57722500439DD5 /* ConversationListViewController.swift */,
+				EE048E4C1B57722500439DD5 /* ConversationViewController.swift */,
+				EE048E4D1B57722500439DD5 /* ParticipantTableViewController.swift */,
+				EEEA8AE21B4F6B6A007C4DCC /* ViewController.swift */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

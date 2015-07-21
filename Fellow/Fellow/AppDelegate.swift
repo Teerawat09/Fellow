@@ -144,10 +144,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
             
             let navController = UINavigationController(rootViewController: VC) as UINavigationController
             
-            var layerVC = mainStoryboard.instantiateViewControllerWithIdentifier("LayerVC") as! LayerVC
+            var chatListVC : ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
             
-            if !(childViews!.last!.isKindOfClass(LayerVC)) {
-                rootViewController.pushViewController(layerVC, animated: true)
+            if !(childViews!.last!.isKindOfClass(ConversationListViewController)) {
+                rootViewController.pushViewController(chatListVC, animated: true)
             }
             
             

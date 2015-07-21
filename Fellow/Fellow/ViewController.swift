@@ -10,7 +10,6 @@ import UIKit
 
 class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
-   @IBOutlet weak var tableView: UITableView!
     
     var permissions = [ "public_profile", "email", "user_friends","user_likes"]
     var dict : NSDictionary!
@@ -20,10 +19,13 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     
     var channelList : [String] = []
     
-    var myAppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    let myAppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    var layerClient: LYRClient!
+    @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        layerClient = myAppDelegate.layerClient
         // Do any additional setup after loading the view, typically from a nib.
         self.locationManager = CLLocationManager()
         locationManager.requestAlwaysAuthorization()
@@ -31,6 +33,9 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startMonitoringSignificantLocationChanges()
         logInController.delegate = self
+        
+        let chatList = UIBarButtonItem(title: "Chat List", style: UIBarButtonItemStyle.Plain, target: self, action: Selector("ChatListButtonTapped:"))
+        self.navigationItem.setLeftBarButtonItem(chatList, animated: false)
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -90,14 +95,14 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     
     func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
         self.dismissViewControllerAnimated(true, completion: { () -> Void in
-            self.layerRequestAuthentication(self.myAppDelegate.layerClient)
+            self.layerRequestAuthentication(self.layerClient)
         })
     }
     
     func logout(){
         PFUser.logOutInBackgroundWithBlock { ( error:NSError?) -> Void in
             if error == nil {
-                self.layerRequestDeAuthentication(self.myAppDelegate.layerClient)
+                self.layerRequestDeAuthentication(self.layerClient)
                 self.showPFLoginViewController()
             }else{
                 println(error)
@@ -117,10 +122,11 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         // Do stuff with the user
         if((FBSDKAccessToken.currentAccessToken()) != nil){
             //deleteUserLikeList(currentUser)
-            FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
+            FBSDKGraphRequest(graphPath: "me", parameters: ["fields": "id, name, first_name, last_name, email"]).startWithCompletionHandler({ (connection, result, error) -> Void in
                 if (error == nil){
                     self.dict = result as! NSDictionary
                     if let userInfoObject = PFUser.currentUser(){
+                        userInfoObject["username"] = self.dict.valueForKey("name") as! String
                         userInfoObject["first_name"] = self.dict.valueForKey("first_name") as! String
                         userInfoObject["last_name"] = self.dict.valueForKey("last_name") as! String
                         userInfoObject["email"] = self.dict.valueForKey("email") as! String
@@ -222,6 +228,12 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
 
     @IBAction func didTapLogout(sender: AnyObject) {
         logout()
+    }
+    
+    func ChatListButtonTapped(sender: AnyObject) {
+        
+        let controller: ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
+        self.navigationController!.pushViewController(controller, animated: true)
     }
 }
 

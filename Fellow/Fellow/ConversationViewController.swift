@@ -15,6 +15,7 @@ class ConversationViewController: ATLConversationViewController, ATLConversation
         self.dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
 
         self.configureUI()
+        
     }
 
     // MARK - UI Configuration methods

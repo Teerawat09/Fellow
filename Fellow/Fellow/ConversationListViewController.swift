@@ -1,18 +1,18 @@
 import UIKit
 
-class ConversationListViewController: ATLConversationListViewController, ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource {
+class ConversationListViewController: ATLConversationListViewController, ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource , UINavigationBarDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.dataSource = self
         self.delegate = self
+        self.navigationController!.navigationBar.backIndicatorImage = UIImage(named: "backicon")
+//        self.navigationController!.navigationBar.tintColor = ATLBlueColor()
         
-        self.navigationController!.navigationBar.tintColor = ATLBlueColor()
+        let leftTitle = self.navigationController?.presentedViewController?.title
+        var logoutItem = UIBarButtonItem(title: leftTitle , style: UIBarButtonItemStyle.Plain , target: self, action: Selector("FavoriteButtonTapped:"))
         
-        let title = NSLocalizedString("Logout", comment: "")
-        let logoutItem = UIBarButtonItem(title: title, style: UIBarButtonItemStyle.Plain, target: self, action: Selector("logoutButtonTapped:"))
-        self.navigationItem.setLeftBarButtonItem(logoutItem, animated: false)
+        self.navigationItem.setLeftBarButtonItem(logoutItem, animated: true)
 
         let composeItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Compose, target: self, action: Selector("composeButtonTapped:"))
         self.navigationItem.setRightBarButtonItem(composeItem, animated: false)
@@ -97,16 +97,8 @@ class ConversationListViewController: ATLConversationListViewController, ATLConv
         self.navigationController!.pushViewController(controller, animated: true)
     }
 
-    func logoutButtonTapped(sender: AnyObject) {
-        println("logOutButtonTapAction")
-        
-        self.layerClient.deauthenticateWithCompletion { (success: Bool, error: NSError?) in
-            if error == nil {
-                PFUser.logOut()
-                self.navigationController!.popToRootViewControllerAnimated(true)
-            } else {
-                println("Failed to deauthenticate: \(error)")
-            }
-        }
+    func FavoriteButtonTapped(sender: AnyObject) {
+//        let controller = navigationController?.presentedViewController(layerClient: self.layerClient)
+        self.navigationController!.dismissViewControllerAnimated(true, completion: nil)
     }
 }

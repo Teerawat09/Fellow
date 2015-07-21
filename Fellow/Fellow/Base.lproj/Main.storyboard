@@ -35,11 +35,6 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
                     <navigationItem key="navigationItem" title="Favorite" id="FVI-nK-eF3">
-                        <barButtonItem key="leftBarButtonItem" title="LayerVC" id="dKf-R8-kKx">
-                            <connections>
-                                <segue destination="Z3e-M7-U4o" kind="push" id="d69-LT-dYz"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Logout" id="yQZ-gC-lon">
                             <connections>
                                 <action selector="didTapLogout:" destination="BYZ-38-t0r" id="7z2-fF-Sj8"/>
@@ -53,27 +48,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="490" y="290"/>
-        </scene>
-        <!--Messages-->
-        <scene sceneID="Xzj-tr-9el">
-            <objects>
-                <viewController storyboardIdentifier="LayerVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Z3e-M7-U4o" customClass="LayerVC" customModule="Fellow" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="UDM-I8-i71">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Messages" id="28i-Qg-ffY">
-                        <barButtonItem key="rightBarButtonItem" title="Send Notifiy" id="Exg-5L-snb">
-                            <connections>
-                                <action selector="didTapSendNotify:" destination="Z3e-M7-U4o" id="DbR-ji-dKu"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ghh-19-Ihf" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="889" y="290"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ge1-SM-iAq">
