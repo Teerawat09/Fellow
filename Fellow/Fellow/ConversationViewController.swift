@@ -27,7 +27,38 @@ class ConversationViewController: ATLConversationViewController, ATLConversation
     // MARK - ATLConversationViewControllerDelegate methods
 
     func conversationViewController(viewController: ATLConversationViewController, didSendMessage message: LYRMessage) {
-        println("Message sent!")
+        println("Message sent! \(message.conversation)")
+        
+        var participantsId : [AnyObject] = []
+        for participantItem in message.conversation.participants {
+            participantsId.append(participantItem)
+        }
+        
+        // Find users near a given location
+        let userQuery = PFUser.query()
+        userQuery!.whereKey("objectId", containedIn: participantsId)
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            var userfindObjects = userQuery?.findObjects() as! [PFUser]
+            
+            // Find devices associated with these users
+            let pushQuery = PFInstallation.query()
+            pushQuery!.whereKey("user", matchesQuery: userQuery!)
+                    
+            var data = [
+                "alert" : "คุณ \(PFUser.currentUser()!.username!) ได้ส่งข้อความสนทนาถึงคุณ",
+                "badge" : "getMessage",
+                "type"  : "getMessage",
+                "sound" : "cheering.caf"
+            ]
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                let push = PFPush()
+                push.setQuery(pushQuery) // Set our Installation query
+                push.setData(data as [NSObject : AnyObject])
+                push.sendPushInBackground()
+            })
+        })
     }
 
     func conversationViewController(viewController: ATLConversationViewController, didFailSendingMessage message: LYRMessage, error: NSError?) {
@@ -35,7 +66,14 @@ class ConversationViewController: ATLConversationViewController, ATLConversation
     }
 
     func conversationViewController(viewController: ATLConversationViewController, didSelectMessage message: LYRMessage) {
-        println("Message selected")
+        println("Message selected \(message)")
+//        
+//        
+//        let msg : LYRMessagePart = message.parts[0] as! LYRMessagePart
+//        if (msg.data != nil){
+//            let msgtext : String = NSString(data:msg.data!, encoding:NSUTF8StringEncoding) as! String
+//            let notifyMsg : LYRMessage = layerClient.newMessageWithParts(message.parts, options: [LYRMessageOptionsPushNotificationAlertKey: msgtext,LYRMessageOptionsPushNotificationSoundNameKey: "layerbell.caf"], error: nil)
+//        }
     }
 
     // MARK - ATLConversationViewControllerDataSource methods

@@ -9,8 +9,7 @@ class ConversationListViewController: ATLConversationListViewController, ATLConv
         self.navigationController!.navigationBar.backIndicatorImage = UIImage(named: "backicon")
 //        self.navigationController!.navigationBar.tintColor = ATLBlueColor()
         
-        let leftTitle = self.navigationController?.presentedViewController?.title
-        var logoutItem = UIBarButtonItem(title: leftTitle , style: UIBarButtonItemStyle.Plain , target: self, action: Selector("FavoriteButtonTapped:"))
+        let logoutItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.Reply, target: self, action: Selector("closeButtonTapped:"))
         
         self.navigationItem.setLeftBarButtonItem(logoutItem, animated: true)
 
@@ -97,7 +96,7 @@ class ConversationListViewController: ATLConversationListViewController, ATLConv
         self.navigationController!.pushViewController(controller, animated: true)
     }
 
-    func FavoriteButtonTapped(sender: AnyObject) {
+    func closeButtonTapped(sender: AnyObject) {
 //        let controller = navigationController?.presentedViewController(layerClient: self.layerClient)
         self.navigationController!.dismissViewControllerAnimated(true, completion: nil)
     }

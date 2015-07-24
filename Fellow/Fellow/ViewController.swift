@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController , PFLogInViewControllerDelegate, ATLConversationListViewControllerDelegate, CLLocationManagerDelegate, UITableViewDelegate, UITableViewDataSource {
     
     
     var permissions = [ "public_profile", "email", "user_friends","user_likes"]
@@ -41,7 +41,7 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
 
-        if PFUser.currentUser() != nil {
+        if PFUser.currentUser() != nil{
             //Insert UserInfo into Parse
             updateUserLocation()
             saveUserInfo(PFUser.currentUser()!)
@@ -151,6 +151,11 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         
         currentInstallation.addUniqueObjectsFromArray(channelList, forKey: "channels")
         currentInstallation.saveInBackground()
+        
+        if let user =  PFUser.currentUser(){
+            user["likes"] = currentInstallation.channels as [AnyObject]!
+            user.saveInBackground()
+        }
     }
     
     func updateUserLocation() {
@@ -225,15 +230,94 @@ class ViewController: UIViewController , PFLogInViewControllerDelegate, CLLocati
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func sendNotification(){
+        // Find users near a given location
+        let myCompanyLocation = PFGeoPoint(latitude: 13.904837646718576, longitude: 100.52979811952365)
+        
+        // Find users near a given location
+        let userQuery = PFUser.query()
+        userQuery!.whereKey("location", nearGeoPoint: myCompanyLocation, withinMiles: 1)
+        
+        // Find devices associated with these users
+        let pushQuery = PFInstallation.query()
+        pushQuery!.whereKey("user", matchesQuery: userQuery!)
+        
+        // Send push notification to query
+        let push = PFPush()
+        push.setQuery(pushQuery) // Set our Installation query
+        push.setMessage("You are near at my Company")
+        push.sendPushInBackground()
+    }
+    
+    func sendNotify(#geoPoint : PFGeoPoint , channels : [AnyObject]){
+        // Find users near a given location
+        let userQuery = PFUser.query()
+        userQuery!.whereKey("location", nearGeoPoint: geoPoint, withinMiles: 1)
+        userQuery!.whereKey("likes", containedIn:channels)
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            var userfindObjects = userQuery?.findObjects() as! [PFUser]
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                var userParticipant:[String] = {
+                    var tempUserPlayers = [String]()
+                    for userItem in userfindObjects {
+                        tempUserPlayers.append(userItem.username!)
+                    }
+                    return tempUserPlayers
+                }()
+                                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                    
+                    // Find devices associated with these users
+                    let pushQuery = PFInstallation.query()
+                    pushQuery!.whereKey("user", matchesQuery: userQuery!)
+                    
+                    var data = [
+                        "alert" : "มี \(userQuery!.countObjects() - 1) คน ชื่นชอบ\(channels.last as! String)เหมือนกับคุณ",
+                        "badge" : "addParticipant",
+                        "type"  : "addParticipant",
+                        "userParticipant": userParticipant,
+                        "sound" : "cheering.caf"
+                    ]
+                    
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        let push = PFPush()
+                        push.setQuery(pushQuery) // Set our Installation query
+                        push.setData(data as [NSObject : AnyObject])
+                        push.sendPushInBackground()
+                    })
+                })
+                
+            })
+        })
+
+    }
 
     @IBAction func didTapLogout(sender: AnyObject) {
-        logout()
+//        logout()
+        if let location = locationManager.location?.coordinate {
+            let myGeoPoint : PFGeoPoint = PFGeoPoint(latitude: location.latitude, longitude: location.longitude)
+            
+            let randomIndex = Int(arc4random_uniform(UInt32(PFInstallation.currentInstallation().channels!.count)))
+            let channelSelectedItem: NSArray? = [PFInstallation.currentInstallation().channels![randomIndex]]
+            sendNotify(geoPoint: myGeoPoint, channels:channelSelectedItem as! [AnyObject])
+        }
+    }
+//    MARK: ATLConversationListViewControllerDelegate
+    func conversationListViewController(conversationListViewController: ATLConversationListViewController!, didSelectConversation conversation: LYRConversation!) {
+//        code
     }
     
     func ChatListButtonTapped(sender: AnyObject) {
         
         let controller: ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
-        self.navigationController!.pushViewController(controller, animated: true)
+        controller.delegate = self
+//        self.navigationController!.pushViewController(controller, animated: true)
+        let navigationController = UINavigationController(rootViewController: controller)
+        self.navigationController!.presentViewController(navigationController, animated: true, completion: nil)
+        
     }
 }
 

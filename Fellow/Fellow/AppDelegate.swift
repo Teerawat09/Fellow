@@ -11,7 +11,7 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate{
+class AppDelegate: UIResponder, UIApplicationDelegate, ATLConversationListViewControllerDelegate, ATLConversationViewControllerDelegate {
 
     var window: UIWindow?
     
@@ -29,6 +29,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         
         //setupParse
         setupParse()
+        
+        //Initializes a LYRClient object
+        var urlLayerAppID = NSURL(string: "layer:///apps/staging/b6217282-23a6-11e5-8729-77a47d007ada")
+        layerClient = LYRClient(appID: urlLayerAppID)
+        layerClient.autodownloadMaximumContentSize = 1024 * 100
+        layerClient.autodownloadMIMETypes = NSSet(objects: "image/jpeg") as Set<NSObject>
+        
+        if(layerClient.isConnected){
+            println("Client is already connected!!")
+        }else{
+            // Tells LYRClient to establish a connection with the Layer service
+            layerClient.connectWithCompletion { (success, error) -> Void in
+                if (success){
+                    println("Client is connected!")
+                }else{
+                    println("Layer error \(error)")
+                }
+            }
+        }
+        
+        
         PFFacebookUtils.initializeFacebookWithApplicationLaunchOptions(launchOptions)
         
         let userNotificationTypes = (UIUserNotificationType.Alert |  UIUserNotificationType.Badge |  UIUserNotificationType.Sound);
@@ -42,28 +63,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
             NotificationOpenLayerView()
         }
         
-        //Initializes a LYRClient object
-        var urlLayerAppID = NSURL(string: "layer:///apps/staging/b6217282-23a6-11e5-8729-77a47d007ada")
-        layerClient = LYRClient(appID: urlLayerAppID)
         
-        // Tells LYRClient to establish a connection with the Layer service
-        layerClient.connectWithCompletion { (success, error) -> Void in
-            if (success){
-                println("Client is connected!")
-            }else{
-                println("Layer error \(error)")
-            }
-        }
-        // Show View Controller
-//        let rootViewController = self.window?.rootViewController
-//        
-//        let mainStoryboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-//        var VC = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController") as! ViewController
-//        VC.layerClient = self.layerClient
-//        self.window!.rootViewController = UINavigationController(rootViewController: VC)
-//        self.window!.makeKeyAndVisible()
-        
-        
+
         return true
     }
     
@@ -131,30 +132,112 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
         PFACL.setDefaultACL(defaultACL, withAccessForCurrentUser: true)
     }
     
+    
+    
+//    MARK: ATLConversationListViewControllerDelegate
+    func conversationListViewController(conversationListViewController: ATLConversationListViewController!, didSelectConversation conversation: LYRConversation!) {
+//        code
+    }
+    
+//    MARK: ATLParticipantTableViewControllerDelegate
+    func participantTableViewController(participantTableViewController: ATLParticipantTableViewController!, didSelectParticipant participant: ATLParticipant!) {
+//        code
+    }
+    
+    /**
+    @abstract Informs the delegate that a search has been made with the following search string.
+    @param participantTableViewController The participant table view controller in which the search was made.
+    @param searchString The search string that was just used for search.
+    @param completion The completion block that should be called when the results are fetched from the search.
+    */
+    func participantTableViewController(participantTableViewController: ATLParticipantTableViewController!, didSearchWithString searchText: String!, completion: ((Set<NSObject>!) -> Void)!) {
+//        code
+    }
+    
     func NotificationOpenLayerView(){
         var token : dispatch_once_t = 0
         dispatch_once(&token) { () -> Void in
             
             let childViews = self.window?.rootViewController?.childViewControllers
-            
             let rootViewController = self.window?.rootViewController as! UINavigationController
             
-            let mainStoryboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
-            var VC = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController") as! ViewController
-            
-            let navController = UINavigationController(rootViewController: VC) as UINavigationController
-            
-            var chatListVC : ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
-            
-            if !(childViews!.last!.isKindOfClass(ConversationListViewController)) {
-                rootViewController.pushViewController(chatListVC, animated: true)
+            println("getUserInfo:\(self.getUserInfo)")
+            if(self.getUserInfo["type"] != nil){
+                if(self.getUserInfo["type"]!.isEqualToString("addParticipant")){
+                    let userQuery = PFQuery(className: "User")
+                    let userParicipant: AnyObject? = self.getUserInfo["userParticipant"]
+                    let userString = userParicipant as! [String]
+                    println("user\(userString)")
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+                        
+                        userQuery.whereKey("username", containedIn: userParicipant as! [AnyObject])
+                        let users = userQuery.findObjects()
+                        
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            let participants = NSSet(array: users as! [PFUser]) as Set<NSObject>
+                            
+                            self.layerClient.newConversationWithParticipants(participants, options: nil, error: nil)
+                            
+                            if !(childViews!.last!.isKindOfClass(ConversationListViewController)) {
+                                let controller: ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
+                                controller.delegate = self
+                                let navigationController = UINavigationController(rootViewController: controller)
+                                rootViewController.presentViewController(navigationController, animated: true, completion: nil)
+                            }
+                        })
+                    })
+                }
+                else if (self.getUserInfo["type"]!.isEqualToString("getMessage")){
+                    if !(childViews!.last!.isKindOfClass(ConversationListViewController)) {
+                        let controller: ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
+                        controller.delegate = self
+                        let navigationController = UINavigationController(rootViewController: controller)
+                        rootViewController.presentViewController(navigationController, animated: true, completion: nil)
+                    }
+                    
+
+// Search แล้ว bug 
+                    if !(childViews!.last!.isKindOfClass(ConversationViewController)) {
+                        let controller = ConversationViewController(layerClient: self.layerClient)
+                        controller.displaysAddressBar = true
+                        controller.delegate = self
+                        rootViewController.pushViewController(controller, animated: false)
+                    }
+//Search แล้วติด bug
+//                    let controller: ConversationViewController = ConversationViewController(layerClient: self.layerClient)
+                    
+                    
+//                    var myparticipants = Set<NSObject>()
+//                    myparticipants.insert("xuYN5xAnIs")
+//                    myparticipants.insert("JzIaq0OOFM")
+//                    var myConversation : LYRConversation = LYRConversation()
+//                    myConversation.addParticipants(myparticipants, error: nil)
+//                    controller.conversation = myConversation
+//                    controller.displaysAddressBar = true;
+//                    
+//                    let navigationController = UINavigationController(rootViewController: controller)
+//                    self.window?.rootViewController?.navigationController?.pushViewController(navigationController, animated: true)
+                }
             }
-            
-            
+            else{
+                
+                let mainStoryboard : UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+                var VC = mainStoryboard.instantiateViewControllerWithIdentifier("ViewController") as! ViewController
+                
+                let navController = UINavigationController(rootViewController: VC) as UINavigationController
+                
+                if !(childViews!.last!.isKindOfClass(ConversationListViewController)) {
+                    
+                    let controller: ConversationListViewController = ConversationListViewController(layerClient: self.layerClient)
+                    controller.delegate = self
+                    let navigationController = UINavigationController(rootViewController: controller)
+                    rootViewController.presentViewController(navigationController, animated: true, completion: nil)
+                }
+            }
+
             self.getUserInfo = [:]
         }
     }
-
 
 }
 
